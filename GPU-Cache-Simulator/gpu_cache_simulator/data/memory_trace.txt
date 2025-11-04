@@ -1,0 +1,40 @@
+GPU Cache Simulator Sample Memory Trace
+
+Format: operation address size thread_id block_id
+
+-----------------------------------------------------------
+
+1. Sequential Global Access (Good L1/L2 spatial locality)
+
+R 0x1000000 4 0 0
+R 0x1000004 4 1 0
+R 0x1000008 4 2 0
+W 0x100000C 4 3 0
+
+2. Shared Memory Access (Address 0x0 is small and local, treated as shared)
+
+R 0x0 4 0 0
+W 0x4 4 1 0
+R 0x8 4 2 0
+W 0xC 4 3 0
+
+3. Reuse Pattern (Will cause cache hits after initial miss)
+
+R 0x7000000 4 0 0
+R 0x7000000 4 1 0
+R 0x7000000 4 2 0
+W 0x7000000 4 3 0
+
+4. Scattered Accesses (Will cause L1/L2 misses)
+
+R 0x2000000 8 0 0
+R 0x3000000 8 1 0
+R 0x4000000 8 2 0
+R 0x5000000 8 3 0
+
+5. Write-Heavy Pattern (Tests dirty bit tracking and eviction)
+
+W 0x6000000 4 0 1
+W 0x6000004 4 1 1
+W 0x6000008 4 2 1
+W 0x600000C 4 3 1
